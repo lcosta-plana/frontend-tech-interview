@@ -1171,55 +1171,98 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
     document.getElementById('confirmBackdrop').classList.remove('show');
   }
 
+  function rating(pct) {
+    if (pct >= 90) return 'Excelente ⭐';
+    if (pct >= 80) return 'Ótimo 💪';
+    if (pct >= 70) return 'Bom 🟢';
+    if (pct >= 55) return 'Regular 🟡';
+    if (pct >= 40) return 'Aceitável 🟠';
+    return 'Insuficiente 🔴';
+  }
+
   function submitTest() {
     clearInterval(interval);
     paused = true;
     document.querySelectorAll('.opt').forEach(o => o.style.pointerEvents = 'none');
 
-    // Score calculation
-    let correct = 0;
     const sectionMap = {
-      'CSS (Q1–Q5)':               ['q1','q2','q3','q4','q5'],
-      'JavaScript (Q6–Q11)':       ['q6','q7','q8','q9','q10','q11'],
-      'TypeScript (Q12–Q16)':      ['q12','q13','q14','q15','q16'],
-      'React (Q17–Q22)':           ['q17','q18','q19','q20','q21','q22'],
-      'Design Patterns (Q23–Q26)': ['q23','q24','q25','q26']
+      'CSS':             { icon: '🎨', qs: ['q1','q2','q3','q4','q5'] },
+      'JavaScript':      { icon: '⚡', qs: ['q6','q7','q8','q9','q10','q11'] },
+      'TypeScript':      { icon: '🔷', qs: ['q12','q13','q14','q15','q16'] },
+      'React':           { icon: '⚛️',  qs: ['q17','q18','q19','q20','q21','q22'] },
+      'Design Patterns': { icon: '🧩', qs: ['q23','q24','q25','q26'] }
     };
 
-    const rows = [];
-    for (const [sec, qs] of Object.entries(sectionMap)) {
-      let secOk = 0;
-      const secRows = [];
+    let totalCorrect = 0;
+    const secResults = {};
+
+    for (const [sec, { icon, qs }] of Object.entries(sectionMap)) {
+      let ok = 0;
+      const detail = [];
       for (const qid of qs) {
         const given    = answers[qid] || '–';
         const expected = CORRECT[qid];
-        const ok = given === expected;
-        if (ok) { correct++; secOk++; }
-        secRows.push(`  ${qid.toUpperCase()}: ${given}  ${ok ? '✓' : `✗  (correct: ${expected})`}`);
+        const correct  = given === expected;
+        if (correct) { ok++; totalCorrect++; }
+        detail.push(`    ${qid.toUpperCase()}: ${given}  ${correct ? '✓' : `✗  (correct: ${expected})`}`);
       }
-      rows.push(`\n${sec}  [${secOk}/${qs.length}]`);
-      rows.push(...secRows);
+      secResults[sec] = { icon, ok, total: qs.length, detail };
     }
 
-    const pct      = Math.round((correct / 26) * 100);
+    const pct      = Math.round((totalCorrect / 26) * 100);
     const elapsed  = TOTAL - remaining;
     const timeUsed = `${Math.floor(elapsed / 60)}m ${elapsed % 60}s`;
     const answered = Object.keys(answers).length;
+    const div      = '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
+
+    const lines = [
+      div,
+      '  🧑‍💻  SENIOR FRONTEND ENGINEER — INTERVIEW REPORT',
+      div,
+      '',
+      `  Candidate  :  ${candidateName}`,
+      `  Date       :  ${new Date().toLocaleString('en-US')}`,
+      `  Time used  :  ${timeUsed}`,
+      `  Answered   :  ${answered} / 26`,
+      '',
+      div,
+      '  📊  OVERALL RESULT',
+      div,
+      '',
+      `  Score   :  ${totalCorrect} / 26  (${pct}%)`,
+      `  Rating  :  ${rating(pct)}`,
+      '',
+      div,
+      '  📋  SECTION BREAKDOWN',
+      div,
+      ''
+    ];
+
+    for (const [sec, { icon, ok, total }] of Object.entries(secResults)) {
+      const p   = Math.round((ok / total) * 100);
+      const bar = '█'.repeat(Math.round(p / 10)) + '░'.repeat(10 - Math.round(p / 10));
+      lines.push(`  ${icon}  ${sec.padEnd(18)}  ${String(ok).padStart(2)}/${total}  (${String(p).padStart(3)}%)  [${bar}]  ${rating(p)}`);
+    }
+
+    lines.push('', div, '  🔍  DETAILED ANSWERS', div);
+
+    for (const [sec, { icon, ok, total, detail }] of Object.entries(secResults)) {
+      const p = Math.round((ok / total) * 100);
+      lines.push('', `  ${icon} ${sec}  [${ok}/${total} — ${rating(p)}]`);
+      lines.push(...detail);
+    }
+
+    lines.push('', div);
 
     fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
-        access_key:     WEB3FORMS_KEY,
-        subject:        `Interview Report — ${candidateName} — ${pct}%`,
-        from_name:      'Frontend Interview',
-        to_email:       REPORT_TO,
-        candidate_name: candidateName,
-        score:          `${correct} / 26 (${pct}%)`,
-        answered_count: `${answered} / 26`,
-        time_used:      timeUsed,
-        answers_detail: rows.join('\n'),
-        interview_date: new Date().toLocaleString('en-US')
+        access_key: WEB3FORMS_KEY,
+        subject:    `[Interview] ${candidateName} — ${totalCorrect}/26 (${pct}%) — ${rating(pct)}`,
+        from_name:  'Frontend Interview System',
+        to_email:   REPORT_TO,
+        message:    lines.join('\n')
       })
     }).catch(err => console.error('Web3Forms error:', err));
 
