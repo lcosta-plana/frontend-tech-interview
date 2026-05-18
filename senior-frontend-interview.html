@@ -337,7 +337,6 @@
     .name-field input::placeholder { color: var(--muted); opacity: .6; }
     .name-field input.error { border-color: var(--red); }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -953,11 +952,9 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
 </div>
 
 <script>
-  // ── EMAILJS CONFIG — fill in after creating your EmailJS account ──
-  const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
-  const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
-  const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
-  const REPORT_TO = 'lcosta@planatechnologies.com';
+  // ── WEB3FORMS CONFIG — paste your access key from app.web3forms.com ──
+  const WEB3FORMS_KEY = '39af82e1-f1a5-4722-86ab-2df5e7496769';
+  const REPORT_TO     = 'lcosta@planatechnologies.com';
 
   // ── ANSWER KEY ──
   const CORRECT = {
@@ -1121,15 +1118,22 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
     const timeUsed = `${Math.floor(elapsed / 60)}m ${elapsed % 60}s`;
     const answered = Object.keys(answers).length;
 
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email:       REPORT_TO,
-      candidate_name: candidateName,
-      score:          `${correct} / 26 (${pct}%)`,
-      answered_count: `${answered} / 26`,
-      time_used:      timeUsed,
-      answers_detail: rows.join('\n'),
-      interview_date: new Date().toLocaleString('en-US')
-    }, EMAILJS_PUBLIC_KEY).catch(err => console.error('EmailJS error:', err));
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key:     WEB3FORMS_KEY,
+        subject:        `Interview Report — ${candidateName} — ${pct}%`,
+        from_name:      'Frontend Interview',
+        to_email:       REPORT_TO,
+        candidate_name: candidateName,
+        score:          `${correct} / 26 (${pct}%)`,
+        answered_count: `${answered} / 26`,
+        time_used:      timeUsed,
+        answers_detail: rows.join('\n'),
+        interview_date: new Date().toLocaleString('en-US')
+      })
+    }).catch(err => console.error('Web3Forms error:', err));
 
     document.getElementById('doneOverlay').style.display = 'flex';
   }
