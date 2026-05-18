@@ -324,6 +324,41 @@
     .btn-finish:hover { opacity: .85; }
     .btn-finish:active { transform: scale(.97); }
 
+    /* ── CONFIRM MODAL ── */
+    .confirm-backdrop {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(10,11,16,.8);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      align-items: center; justify-content: center;
+    }
+    .confirm-backdrop.show { display: flex; }
+    .confirm-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px 28px; max-width: 380px; width: 90%;
+      text-align: center;
+    }
+    .confirm-box .icon { font-size: 40px; margin-bottom: 14px; }
+    .confirm-box h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .confirm-box p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+    .confirm-box p strong { color: var(--yellow); }
+    .confirm-actions { display: flex; gap: 10px; }
+    .confirm-actions .btn-back {
+      flex: 1; padding: 11px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text);
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: opacity .2s;
+    }
+    .confirm-actions .btn-back:hover { opacity: .8; }
+    .confirm-actions .btn-confirm {
+      flex: 1; padding: 11px; border-radius: 9px; border: none;
+      background: var(--accent); color: #fff;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: opacity .2s;
+    }
+    .confirm-actions .btn-confirm:hover { opacity: .85; }
+
     /* ── NAME FIELD ── */
     .name-field { margin-bottom: 20px; text-align: left; }
     .name-field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 7px; font-weight: 600; }
@@ -941,6 +976,19 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
   <button class="btn-finish" onclick="finishInterview()">Finish test</button>
 </div>
 
+<!-- CONFIRM FINISH MODAL -->
+<div class="confirm-backdrop" id="confirmBackdrop">
+  <div class="confirm-box">
+    <div class="icon">⚠️</div>
+    <h3>Unanswered questions</h3>
+    <p id="confirmMsg">You still have <strong id="confirmCount">0 questions</strong> unanswered. Are you sure you want to finish the test?</p>
+    <div class="confirm-actions">
+      <button class="btn-back" onclick="cancelFinish()">Go back</button>
+      <button class="btn-confirm" onclick="confirmFinish()">Finish anyway</button>
+    </div>
+  </div>
+</div>
+
 <!-- SUBMITTED SCREEN -->
 <div id="submittedScreen" style="display:none; position:fixed; inset:0; background:var(--bg); align-items:center; justify-content:center; z-index:200;">
   <div style="text-align:center; color:var(--muted); font-size:15px; line-height:2;">
@@ -1104,6 +1152,26 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
   }
 
   function finishInterview() {
+    const missing = 26 - Object.keys(answers).length;
+    if (missing > 0) {
+      document.getElementById('confirmCount').textContent =
+        `${missing} question${missing > 1 ? 's' : ''}`;
+      document.getElementById('confirmBackdrop').classList.add('show');
+      return;
+    }
+    submitTest();
+  }
+
+  function confirmFinish() {
+    document.getElementById('confirmBackdrop').classList.remove('show');
+    submitTest();
+  }
+
+  function cancelFinish() {
+    document.getElementById('confirmBackdrop').classList.remove('show');
+  }
+
+  function submitTest() {
     clearInterval(interval);
     paused = true;
     document.querySelectorAll('.opt').forEach(o => o.style.pointerEvents = 'none');
