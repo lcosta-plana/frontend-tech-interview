@@ -941,13 +941,22 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
   <button class="btn-finish" onclick="finishInterview()">Finish test</button>
 </div>
 
+<!-- SUBMITTED SCREEN -->
+<div id="submittedScreen" style="display:none; position:fixed; inset:0; background:var(--bg); align-items:center; justify-content:center; z-index:200;">
+  <div style="text-align:center; color:var(--muted); font-size:15px; line-height:2;">
+    <div style="font-size:52px; margin-bottom:16px">✅</div>
+    <div style="font-size:20px; font-weight:700; color:var(--text); margin-bottom:8px">Test submitted</div>
+    <div>Your answers have been recorded.<br>You may now close this tab.</div>
+  </div>
+</div>
+
 <!-- DONE OVERLAY -->
 <div class="overlay done-overlay" id="doneOverlay" style="display:none">
   <div class="overlay-card">
     <div class="big">✅</div>
     <h2>Interview Completed</h2>
     <p>Thank you! Your answers have been submitted.<br>The interviewer will take it from here.</p>
-    <button class="btn-start" style="margin-top:8px" onclick="document.getElementById('doneOverlay').style.display='none'">Close</button>
+    <button class="btn-start" style="margin-top:8px" onclick="closeInterview()">Close</button>
   </div>
 </div>
 
@@ -1084,9 +1093,20 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
     document.getElementById('finishProgress').textContent = `${count} / 26 answered`;
   }
 
+  function closeInterview() {
+    document.getElementById('doneOverlay').style.display = 'none';
+    document.querySelector('main').style.display = 'none';
+    document.querySelector('.footer').style.display = 'none';
+    document.getElementById('finishBar').style.display = 'none';
+    document.querySelector('.progress-strip').style.display = 'none';
+    document.getElementById('qDots').style.display = 'none';
+    document.getElementById('submittedScreen').style.display = 'flex';
+  }
+
   function finishInterview() {
     clearInterval(interval);
     paused = true;
+    document.querySelectorAll('.opt').forEach(o => o.style.pointerEvents = 'none');
 
     // Score calculation
     let correct = 0;
