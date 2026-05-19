@@ -258,11 +258,13 @@
       background: rgba(10,11,16,.97);
       display: flex; align-items: center; justify-content: center;
       z-index: 999; backdrop-filter: blur(4px);
+      overflow-y: auto; padding: 16px;
     }
     .overlay-card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 20px; padding: 44px;
-      max-width: 440px; width: 90%; text-align: center;
+      max-width: 440px; width: 100%; text-align: center;
+      margin: auto;
     }
     .overlay-card .big { font-size: 48px; margin-bottom: 16px; }
     .overlay-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
@@ -332,12 +334,13 @@
       backdrop-filter: blur(4px);
       z-index: 500;
       align-items: center; justify-content: center;
+      overflow-y: auto; padding: 16px;
     }
     .confirm-backdrop.show { display: flex; }
     .confirm-box {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 32px 28px; max-width: 380px; width: 90%;
-      text-align: center;
+      border-radius: 16px; padding: 32px 28px; max-width: 380px; width: 100%;
+      text-align: center; margin: auto;
     }
     .confirm-box .icon { font-size: 40px; margin-bottom: 14px; }
     .confirm-box h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
@@ -358,6 +361,39 @@
       transition: opacity .2s;
     }
     .confirm-actions .btn-confirm:hover { opacity: .85; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      .overlay-card {
+        padding: 24px 18px;
+        border-radius: 14px;
+      }
+      .overlay-card .big { font-size: 36px; margin-bottom: 10px; }
+      .overlay-card h2 { font-size: 18px; }
+      .overlay-card p { font-size: 13px; margin-bottom: 16px; }
+      .overlay-rules { padding: 10px 14px; margin-bottom: 16px; }
+      .overlay-rules li { font-size: 12px; line-height: 1.9; }
+      .btn-start { font-size: 14px; padding: 12px; }
+
+      .confirm-box {
+        padding: 22px 16px;
+        border-radius: 12px;
+      }
+      .confirm-box .icon { font-size: 32px; margin-bottom: 10px; }
+      .confirm-box h3 { font-size: 16px; }
+      .confirm-box p { font-size: 13px; margin-bottom: 14px; }
+      .confirm-actions .btn-back,
+      .confirm-actions .btn-confirm { font-size: 13px; padding: 10px; }
+
+      .header { padding: 10px 14px; }
+      .header-title { font-size: 12px; }
+      .timer-display { font-size: 22px; letter-spacing: 2px; }
+      .timer-bar-outer { width: 90px; }
+      .progress-strip { padding: 8px 12px; }
+      .q-dots { padding: 6px 12px; }
+      main { padding: 20px 12px 100px; }
+      .finish-bar { padding: 10px 16px; }
+    }
 
     /* ── NAME FIELD ── */
     .name-field { margin-bottom: 20px; text-align: left; }
