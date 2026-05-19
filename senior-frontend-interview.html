@@ -383,10 +383,14 @@
     <p>Technical interview — choose the best answer for each question.</p>
     <ul class="overlay-rules">
       <li>26 multiple-choice questions</li>
-      <li>40-minute countdown timer</li>
+      <li>50-minute countdown timer</li>
       <li>Select one option per question</li>
       <li>You can change your answer at any time</li>
     </ul>
+    <div style="background:rgba(108,99,255,.08);border:1px solid rgba(108,99,255,.3);border-radius:9px;padding:12px 16px;margin-bottom:20px;text-align:left;">
+      <div style="font-size:12px;font-weight:700;color:var(--accent2);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase;">📝 Important instruction</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.65;">For each question, <strong style="color:var(--text)">select the answer you believe is correct</strong> and be ready to <strong style="color:var(--text)">briefly explain your reasoning</strong> in a few words. There is no need to write anything — just be prepared to justify your choice verbally. Manage your time wisely: roughly <strong style="color:var(--text)">~2 minutes per question</strong>.</div>
+    </div>
     <div class="name-field">
       <label for="candidateNameInput">Your full name</label>
       <input type="text" id="candidateNameInput" placeholder="e.g. John Smith" autocomplete="off" />
@@ -395,11 +399,30 @@
   </div>
 </div>
 
+<!-- START CONFIRMATION MODAL -->
+<div class="confirm-backdrop" id="startConfirmBackdrop">
+  <div class="confirm-box" style="max-width:420px;">
+    <div class="icon">⏱️</div>
+    <h3>Ready to begin?</h3>
+    <p style="margin-bottom:16px;">Please read these reminders before the clock starts:</p>
+    <ul class="overlay-rules" style="margin-bottom:20px;">
+      <li>You will have <strong style="color:var(--yellow)">50 minutes</strong> to answer all 26 questions</li>
+      <li>For each answer, <strong style="color:var(--yellow)">briefly explain</strong> your reasoning in a few words</li>
+      <li>Keep an eye on the timer — aim for <strong style="color:var(--yellow)">~2 min per question</strong></li>
+      <li>You can revisit and change any answer before finishing</li>
+    </ul>
+    <div class="confirm-actions">
+      <button class="btn-back" onclick="cancelStart()">Cancel</button>
+      <button class="btn-confirm" onclick="confirmStart()">Start Interview →</button>
+    </div>
+  </div>
+</div>
+
 <!-- TIME UP OVERLAY -->
 <div class="overlay timeup" id="timeupOverlay">
   <div style="font-size:56px">⏰</div>
   <h2>Time's Up!</h2>
-  <p>The 40-minute session has ended.</p>
+  <p>The 50-minute session has ended.</p>
   <button class="btn btn-ghost" onclick="document.getElementById('timeupOverlay').classList.remove('show')">Continue</button>
 </div>
 
@@ -407,7 +430,7 @@
 <div class="header">
   <div class="header-title">Senior Frontend Engineer &nbsp;·&nbsp; <span>Technical Interview</span></div>
   <div class="timer-wrap">
-    <div class="timer-display" id="timerDisplay">40:00</div>
+    <div class="timer-display" id="timerDisplay">50:00</div>
     <div class="timer-col">
       <div class="timer-bar-outer"><div class="timer-bar-inner" id="timerBar"></div></div>
       <div class="timer-label" id="timerLabel">Not started</div>
@@ -435,7 +458,7 @@
     <p>Select the best answer for each question. There is no final score — just pick what you believe is correct and feel free to think out loud.</p>
     <div class="intro-meta">
       <span class="badge hl">26 Questions</span>
-      <span class="badge hl">⏱ 40 minutes</span>
+      <span class="badge hl">⏱ 50 minutes</span>
       <span class="badge">CSS · JS · TS · React · Design Patterns</span>
     </div>
   </div>
@@ -967,7 +990,7 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
 </main>
 
 <div class="footer">
-  Senior Frontend Engineer · Technical Interview &nbsp;·&nbsp; 26 questions · 40 min
+  Senior Frontend Engineer · Technical Interview &nbsp;·&nbsp; 26 questions · 50 min
 </div>
 
 <!-- FINISH BAR -->
@@ -1023,7 +1046,7 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
   };
 
   // ── STATE ──
-  const TOTAL = 40 * 60;
+  const TOTAL = 50 * 60;
   let remaining = TOTAL;
   let paused = true;
   let interval = null;
@@ -1040,12 +1063,21 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
       return;
     }
     candidateName = name;
+    document.getElementById('startConfirmBackdrop').classList.add('show');
+  }
+
+  function confirmStart() {
+    document.getElementById('startConfirmBackdrop').classList.remove('show');
     document.getElementById('startOverlay').style.display = 'none';
     document.getElementById('pauseBtn').style.display = '';
     document.getElementById('finishBar').classList.add('visible');
     buildDots();
     paused = false;
     interval = setInterval(tick, 1000);
+  }
+
+  function cancelStart() {
+    document.getElementById('startConfirmBackdrop').classList.remove('show');
   }
 
   function tick() {
