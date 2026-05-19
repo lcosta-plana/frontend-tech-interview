@@ -1110,6 +1110,7 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
     buildDots();
     paused = false;
     interval = setInterval(tick, 1000);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   function cancelStart() {
