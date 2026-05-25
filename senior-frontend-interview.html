@@ -1070,8 +1070,7 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
 <script>
   // ── WEB3FORMS CONFIG — paste your access key from app.web3forms.com ──
   const WEB3FORMS_KEY = '39af82e1-f1a5-4722-86ab-2df5e7496769';
-  const REPORT_TO     = 'lcosta@planatechnologies.com';
-  const REPORT_CC     = 'luiscostalafc@gmail.com; awiese@planatechnologies.com';
+  const REPORT_TO     = 'luiscostalafc@gmail.com';
 
   // ── ANSWER KEY ──
   const CORRECT = {
@@ -1332,7 +1331,6 @@ console.log(fns[0](), fns[1](), fns[2]());</pre>
         subject:    `[Interview] ${candidateName} — ${totalCorrect}/26 (${pct}%) — ${rating(pct)}`,
         from_name:  'Frontend Interview System',
         to_email:   REPORT_TO,
-        ccemail:    REPORT_CC,
         message:    lines.join('\n')
       })
     }).catch(err => console.error('Web3Forms error:', err));
